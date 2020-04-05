@@ -38,3 +38,19 @@ tab1 %>% right_join(tab2)
 inner_join(tab1, tab2)
 semi_join(tab1, tab2)
 anti_join(tab1, tab2)
+
+# Binding tables
+#short example
+bind_cols(a = 1:3, b = 4:6)
+
+# extract 3 tables with different columns and binding them together using bind_cols
+tab1 <- tab[, 1:3]
+tab2 <- tab[, 4:6]
+tab3 <- tab[, 7:9]
+new_tab <- bind_cols(tab1, tab2, tab3)
+head(new_tab)
+
+# same with rows
+tab1 <- tab[1:2,]
+tab2 <- tab[3:4,]
+bind_rows(tab1, tab2)
