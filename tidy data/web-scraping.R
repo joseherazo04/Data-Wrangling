@@ -65,4 +65,4 @@ get_recipe <- function(url){
 #The you can call this function with another url and everytime you want
 get_recipe("http://www.foodnetwork.com/recipes/food-network-kitchen/pancakes-recipe-1913844")
 
-
+#Someone in the discussion forum provides this link: http://www.foodnetwork.co.uk/recipes/guacamole.html?utm_source=foodnetwork.com&utm_medium=domestic
