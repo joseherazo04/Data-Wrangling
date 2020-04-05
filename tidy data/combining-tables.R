@@ -46,6 +46,10 @@ anti_join(tab1, tab2)
 #######################################################################
 # Binding tables
 #######################################################################
+
+#bind_cols and bind_rows return tibbles
+#R base has some functions that perform the same (cbind and rbind) but return data.frame or matrixes
+
 #short example
 bind_cols(a = 1:3, b = 4:6)
 
