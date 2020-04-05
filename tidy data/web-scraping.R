@@ -43,10 +43,10 @@ head(tab)
 #UNFORTUNATELY LINK DOESN'T WORK
 
 #An example in which we elements or patterns patterns in a guacamole recipe
-h <- read_html("http://www.foodnetwork.com/recipes/alton-brown/guacamole-recipe-1940609")
-recipe <- h %>% html_node(".o-AssetTitle__a-HeadlineText") %>% html_text()
-prep_time <- h %>% html_node(".m-RecipeInfo__a-Description--Total") %>% html_text()
-ingredients <- h %>% html_nodes(".o-Ingredients__a-Ingredient") %>% html_text()
+h <- read_html("http://www.foodnetwork.co.uk/recipes/guacamole.html?utm_source=foodnetwork.com&utm_medium=domestic")
+recipe <- h %>% html_node(".method-list") %>% html_text()
+prep_time <- h %>% html_node(".stat-circle") %>% html_text()
+ingredients <- h %>% html_nodes(".ingredient-list") %>% html_text()
 
 guacamole <- list(recipe, prep_time, ingredients)
 guacamole
@@ -56,13 +56,13 @@ guacamole
 
 get_recipe <- function(url){
   h <- read_html(url)
-  recipe <- h %>% html_node(".o-AssetTitle__a-HeadlineText") %>% html_text()
-  prep_time <- h %>% html_node(".m-RecipeInfo__a-Description--Total") %>% html_text()
-  ingredients <- h %>% html_nodes(".o-Ingredients__a-Ingredient") %>% html_text()
+  recipe <- h %>% html_node(".method-list") %>% html_text()
+  prep_time <- h %>% html_node(".stat-circle") %>% html_text()
+  ingredients <- h %>% html_nodes(".ingredient-list") %>% html_text()
   return(list(recipe = recipe, prep_time = prep_time, ingredients = ingredients))
 } 
 
 #The you can call this function with another url and everytime you want
-get_recipe("http://www.foodnetwork.com/recipes/food-network-kitchen/pancakes-recipe-1913844")
+get_recipe("http://www.foodnetwork.co.uk/recipes/guacamole.html?utm_source=foodnetwork.com&utm_medium=domestic")
 
 #Someone in the discussion forum provides this link: http://www.foodnetwork.co.uk/recipes/guacamole.html?utm_source=foodnetwork.com&utm_medium=domestic
