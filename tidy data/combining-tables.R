@@ -11,6 +11,10 @@ data(polls_us_election_2016)
 head(results_us_election_2016)
 identical(results_us_election_2016$state, murders$state)
 
+######################################################################
+# Combining tables
+######################################################################
+
 # join the murders table and US election results table
 tab <- left_join(murders, results_us_election_2016, by = "state")
 head(tab)
@@ -39,7 +43,9 @@ inner_join(tab1, tab2)
 semi_join(tab1, tab2)
 anti_join(tab1, tab2)
 
+#######################################################################
 # Binding tables
+#######################################################################
 #short example
 bind_cols(a = 1:3, b = 4:6)
 
@@ -54,3 +60,38 @@ head(new_tab)
 tab1 <- tab[1:2,]
 tab2 <- tab[3:4,]
 bind_rows(tab1, tab2)
+
+######################################################################
+# Set Operators
+######################################################################
+
+#union: makes an union of two sets
+#intersection: return the intersectation of two sets
+#setdiff(x,y): return the elements in x that don't appear in y
+#setequal(x,y): return of the two sets x and y are the same regardless of the order
+
+# intersect vectors or data frames
+intersect(1:10, 6:15)
+intersect(c("a","b","c"), c("b","c","d"))
+tab1 <- tab[1:5,]
+tab2 <- tab[3:7,]
+intersect(tab1, tab2)
+
+# perform a union of vectors or data frames
+union(1:10, 6:15)
+union(c("a","b","c"), c("b","c","d"))
+tab1 <- tab[1:5,]
+tab2 <- tab[3:7,]
+union(tab1, tab2)
+
+# set difference of vectors or data frames
+setdiff(1:10, 6:15)
+setdiff(6:15, 1:10)
+tab1 <- tab[1:5,]
+tab2 <- tab[3:7,]
+setdiff(tab1, tab2)
+
+# setequal determines whether sets have the same elements, regardless of order
+setequal(1:5, 1:6)
+setequal(1:5, 5:1)
+setequal(tab1, tab2)
