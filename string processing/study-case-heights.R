@@ -192,6 +192,3 @@ new_heights %>%
   select(original, height) %>% 
   arrange(height) %>%
   View()
-
-
-

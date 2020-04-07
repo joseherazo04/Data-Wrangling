@@ -51,5 +51,3 @@ new_research_funding_rates <- tab[6:14] %>%
 new_research_funding_rates %>% head()
 
 identical(research_funding_rates, new_research_funding_rates)
-
-
