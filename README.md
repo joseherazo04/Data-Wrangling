@@ -8,7 +8,7 @@ How to import data from different sources.
 First pieces of converting data into a tidy format. Web scrapping and operating with tables (joins, adding rows, ...)
 
 ### Section 3: String Processing
-How to process strings using regular expressions (regex).
+How to process strings using regular expressions (regex). Extract data from html and pdf files.
 
 ### Section 4: Dates, Times, and Text Mining
 How to work with dates and times as file formats and how to mine text.
