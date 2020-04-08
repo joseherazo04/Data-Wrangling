@@ -27,7 +27,7 @@ head(trump_tweets)
 names(trump_tweets)
 
 trump_tweets %>% select(text) %>% head # text of the tweet
-trump_tweets %>% count(source) %>% arrange(desc(n)) # device used
+trump_tweets %>% count(source) %>% arrange(desc(n)) # device used ordered
 
 # extract to remove the Twitter for part of the source 
 # and filter out retweets
@@ -150,6 +150,8 @@ android_iphone_or <- tweet_words %>%
   spread(source, n, fill = 0) %>%
   mutate(or = (Android + 0.5) / (sum(Android) - Android + 0.5) / 
            ( (iPhone + 0.5) / (sum(iPhone) - iPhone + 0.5)))
+
+# Observations
 android_iphone_or %>% arrange(desc(or))
 android_iphone_or %>% arrange(or)
 
