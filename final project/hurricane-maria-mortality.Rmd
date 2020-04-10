@@ -1,8 +1,8 @@
 ---
-title: "Final project"
+title: "Mortality after Hurricane María"
 output: html_notebook
 ---
-Problem description
+**Problem description**
 
 On September 20, 2017, Hurricane María made landfall on Puerto Rico. It was the worst natural disaster on record in Puerto Rico and the deadliest Atlantic hurricane since 2004. However, Puerto Rico's official death statistics only tallied 64 deaths caused directly by the hurricane (due to structural collapse, debris, floods and drownings), an undercount that slowed disaster recovery funding. The majority of the deaths resulted from infrastructure damage that made it difficult to access resources like clean food, water, power, healthcare and communications in the months after the disaster, and although these deaths were due to effects of the hurricane, they were not initially counted.
 
@@ -10,4 +10,155 @@ In order to correct the misconception that few lives were lost in Hurricane Mar�
 
 We will use your new data wrangling skills to extract actual daily mortality data from Puerto Rico and investigate whether the Hurricane María had an immediate effect on daily mortality compared to unaffected days in September 2015-2017.
 
+*Imports and options*
+```{r}
+library(tidyverse)
+library(pdftools)
+options(digits = 3)    # report 3 significant digits
+```
+Question 1. *Loading file and quick analysis*
 
+PDF file from *extdata* directory of **dslabs** package
+
+The PDF contains 12 pages, each one representing each month and containing a table and a graph with the mortality data
+```{r}
+fn <- system.file("extdata", "RD-Mortality-Report_2015-18-180531.pdf", package="dslabs")
+system2("open", args = fn)
+system("cmd.exe", input = paste("start", fn)) #some problems here
+```
+Question 2. *Extracting PDF with pdftools*
+
+It returns a character string of lenght 12, each entry represents the text in each page.
+```{r}
+txt <- pdf_text(fn)
+```
+Question 3. *Extracting text*
+```{r}
+txt <- pdf_text(fn)
+```
+
+Question 4. *Splitting line character*
+
+A table with a bunch of other stuff. List of 1 entry
+```{r}
+x <- txt[9] %>% str_split('\n')
+```
+**Obtain first entry of x**
+
+Character vector of 40 entries
+```{r}
+s <- x[[1]]
+s
+```
+Question 5. **Remove withespaces from the start and end**
+
+When inspecting the string we obtained above, we see a common problem: white space before and after the other characters. Trimming is a common first step in string processing. These extra spaces will eventually make splitting the strings hard so we start by removing them.
+
+It removes withespaces from the start and end of every entry. It looks cleaner now.
+```{r}
+s <- str_trim(s)
+```
+Question 6. *Extracting header index*
+
+We want to extract the numbers from the strings stored in s. However, there are a lot of non-numeric characters that will get in the way. We can remove these, but before doing this we want to preserve the string with the column header, which includes the month abbreviation.
+
+We will find the index of the column name.
+```{r}
+header_index <- str_which(s, "2015")[1]
+```
+Question 7. *Extracting header and month*
+
+We want to extract two objects from the header row: month will store the month and header will store the column names.
+```{r}
+header <- s[header_index] %>% str_split("\\s+", simplify = TRUE)
+month <- header[1]
+header <- header[2:5]
+month
+header
+```
+Question 8. *Tail with total index*
+
+Notice that towards the end of the page defined by s you see a "Total" row followed by rows with other summary statistics. Create an object called tail_index with the index of the "Total" entry
+```{r}
+tail_index <- str_which(s, "Total")
+```
+Question 9. *Find rows with one number*
+
+Because our PDF page includes graphs with numbers, some of our rows have just one number (from the y-axis of the plot). Use the str_count() function to create an object n with the count of numbers in each row
+
+```{r}
+n <- str_count(s,"^\\d+$")
+```
+Question 10. *Remove rows*
+
+We are now ready to remove entries from rows that we know we don't need. The entry header_index and everything before it should be removed. Entries for which n is 1 should also be removed, and the entry tail_index and everything that comes after it should be removed as well.
+```{r}
+table <- s[(header_index+1):(tail_index-1)]
+n <- str_count(table,"^\\d+$")
+table <- table[!n]
+table
+```
+Question 11. *Remove text*
+
+Now we are ready to remove all text that is not a digit or space. Do this using regular expressions (regex) and the str_remove_all() function.
+
+In regex, using the ^ inside the square brackets [] means not, like the ! means not in !=. To define the regex pattern to catch all non-numbers, you can type [^\\d]. But remember you also want to keep spaces.
+```{r}
+table <- str_remove_all(table,"[^\\d\\s]")
+```
+Question 12. *Convert to data matrix*
+
+Use the str_split_fixed function to convert s into a data matrix with just the day and death count data:
+
+**s <- str_split_fixed(s, "\\s+", n = 6)[,1:5]**
+
+Now you are almost ready to finish. Add column names to the matrix: the first column should be day and the next columns should be the header. Convert all values to numeric. Also, add a column with the month. Call the resulting object tab.
+
+What was the mean number of deaths per day in September 2015?
+```{r}
+columnnames <- c(c("day"),header)
+tab <- str_split_fixed(table, "\\s+", n = 6)[,1:5] %>%
+  data.frame(stringsAsFactors = FALSE) %>% #return data.frame
+  setNames(columnnames) %>% #add column names
+  mutate_at(-2, parse_number) #convert to number
+tab
+```
+What was the mean number of deaths per day in September 2015?
+```{r}
+mean(tab$'2015')
+```
+What is the mean number of deaths per day in September 2016?
+```{r}
+mean(tab$'2016')
+```
+Hurricane María hit Puerto Rico on September 20, 2017. What was the mean number of deaths per day from September 1-19, 2017, before the hurricane hit?
+```{r}
+temp <- tab %>% filter(day>=1 & day <=19) %>%
+  select('2017') 
+mean(temp[[1]])
+```
+What was the mean number of deaths per day from September 20-30, 2017, after the hurricane hit?
+```{r}
+temp <- tab %>% filter(day>=20 & day <=30) %>%
+  select('2017') 
+mean(temp[[1]])
+```
+Question 13. *To tidy format*
+
+Finish it up by changing tab to a tidy format, starting from this code outline:
+
+**tab <- tab %>% gather(year, deaths, -day) %>%**
+    **mutate(deaths = as.numeric(deaths))**
+```{r}
+tab_tidy <- tab %>% gather(year, deaths, -day) %>%
+    mutate(deaths = as.numeric(deaths))
+```
+Question 14. *Plot*
+
+Make a plot of deaths versus day with color to denote year. Exclude 2018 since we have no data. Add a vertical line at day 20, the day that Hurricane María hit in 2017.
+```{r}
+tab_tidy %>% 
+  ggplot(aes(day, deaths, color = year)) +
+  geom_line() +
+  geom_point()
+```
